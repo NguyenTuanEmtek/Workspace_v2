@@ -1,0 +1,93 @@
+{
+    "mappings": [
+        {
+            "can_id": "0x100",
+            "signals": [
+                {
+                    "name": "HeadlampStatus",
+                    "vss_path": "Vehicle.Body.Lights.IsHighBeamOn"
+                },
+                {
+                    "name": "HighBeamStatus",
+                    "vss_path": "Vehicle.Body.Lights.IsHeadLampOn"
+                }
+            ]
+        },
+        {
+            "can_id": "0x101",
+            "signals": [
+                {
+                    "name": "LampPower",
+                    "vss_path": "Vehicle.Body.Lighting.Power"
+                },
+                {
+                    "name": "LampCurrent",
+                    "vss_path": "Vehicle.Body.Lighting.Current"
+                }
+            ]
+        },
+        {
+            "can_id": "0x102",
+            "signals": [
+                {
+                    "name": "AmbientLight",
+                    "vss_path": "Vehicle.Body.Lights.AmbientLight"
+                }
+            ]
+        }
+    ],
+    "message_definitions": [
+        {
+            "can_id": "0x100",
+            "name": "LightingControl",
+            "dlc": 8,
+            "description": "Lighting control message",
+            "signals": [
+                {
+                    "name": "HeadlampStatus",
+                    "start_bit": 0,
+                    "bit_length": 1,
+                    "type": "boolean"
+                },
+                {
+                    "name": "HighBeamStatus",
+                    "start_bit": 1,
+                    "bit_length": 1,
+                    "type": "boolean"
+                },
+                {
+                    "name": "FogLightStatus",
+                    "start_bit": 2,
+                    "bit_length": 1,
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "can_id": "0x101",
+            "name": "PowerStatus",
+            "dlc": 8,
+            "description": "Power status message",
+            "signals": [
+                {
+                    "name": "LampPower",
+                    "start_bit": 0,
+                    "bit_length": 16,
+                    "type": "uint16",
+                    "scale": 0.1,
+                    "offset": 0,
+                    "unit": "W"
+                },
+                {
+                    "name": "LampCurrent",
+                    "start_bit": 16,
+                    "bit_length": 16,
+                    "type": "uint16",
+                    "scale": 0.01,
+                    "offset": 0,
+                    "unit": "A"
+                }
+            ]
+        }
+    ]
+}
