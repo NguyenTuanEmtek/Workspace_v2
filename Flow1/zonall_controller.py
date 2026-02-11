@@ -1,12 +1,42 @@
 # zonal_controller.py
 import asyncio
 import json
+import can
 from fmu_can_handler import CANHandler
 
+rx_buffer=[]
 # Đường dẫn FMU
 AUTO_FMU = r"C:\Users\LOQ\Workspace\06_Emtek\01_Workspace\Test_vECU\autoLamp.fmu"
 LAMP_FMU = r"C:\Users\LOQ\Workspace\06_Emtek\01_Workspace\Test_vECU\lampController.fmu"
 MAPPINGS_FILE = "mappings.json"
+
+bus = can.interface.Bus(bustype='virtual', channel=0, receive_own_messages=True)
+
+def Receive_can_msg():
+    try:
+        received_msg = bus.recv(timeout=0.001)
+        on_msg_received(received_msg)
+    except can.CanError:
+        pass
+
+def on_msg_received(msg):
+    if msg:
+        rx_buffer.append(msg)
+
+def print_received_messages():
+        """Print all received CAN messages"""
+        if rx_buffer:
+            print("\nReceived CAN messages:")
+            print("-" * 50)
+            print(f"{'ID':>5} | {'DLC':>2} | {'Data':>10}")
+            print("-" * 50)
+            for msg in rx_buffer:
+                # print(f"ID: 0x{msg.arbitration_id:03X} DL: {msg.dlc} bytes "
+                #       f"DATA: {' '.join(f'{b:02X}' for b in msg.data)}")
+                print(f"0x{msg.arbitration_id:03X} | {msg.dlc:>3} | "
+                      f"{' '.join(f'{b:02X}' for b in msg.data)}")
+        else:
+            print("\nNo CAN messages received")
 
 async def main():
     # Tạo instance của CANHandler
@@ -47,6 +77,7 @@ async def main():
         # print(f"Headlamp messages (ID 0x100): {len(headlamp_messages)}")
         # print(f"Power messages (ID 0x101): {len(power_messages)}")
 
+        Receive_can_msg()
         # gửi dữ data đến broker
         await can_handler.data_to_Kuksa()
         

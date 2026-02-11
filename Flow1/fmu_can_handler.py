@@ -298,11 +298,11 @@ class CANHandler:
                 self.send_can_messages(can_msgs)
                 
                 # Try to receive CAN messages (non-blocking)
-                try:
-                    received_msg = self.bus.recv(timeout=0.001)
-                    self.on_msg_received(received_msg)
-                except can.CanError:
-                    pass
+                # try:
+                #     received_msg = self.bus.recv(timeout=0.001)
+                #     self.on_msg_received(received_msg)
+                # except can.CanError:
+                #     pass
                 
                 # Print progress
                 if print_progress:
@@ -311,10 +311,11 @@ class CANHandler:
                 t += dt
                 
         finally:
-            if print_progress:
-                self.print_received_messages()
+            # if print_progress:
+            #     self.print_received_messages()
                 # if self.vss_converter:
                 #     self.print_vss_statistics()
+            print ("Message sent")
     
     # def _process_received_messages(self):
     #     """Process received CAN messages (non-blocking)"""
