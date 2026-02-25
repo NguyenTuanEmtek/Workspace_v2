@@ -62,8 +62,8 @@ def can_listener(bus):
 def on_msg_received(msg):
     if msg:
         rx_buffer.append(msg)
-        print(f"0x{msg.arbitration_id:03X} | {msg.dlc:>3} | "
-                      f"{' '.join(f'{b:02X}' for b in msg.data)}")
+        # print(f"0x{msg.arbitration_id:03X} | {msg.dlc:>3} | "
+        #               f"{' '.join(f'{b:02X}' for b in msg.data)}")
 
 def print_received_messages():
     """Print all received CAN messages"""
@@ -82,7 +82,7 @@ def print_received_messages():
 
 async def data_to_Kuksa():
         try:
-            async with VSSClient(host="localhost", port=55555) as client:
+            async with VSSClient(host="localhost", port=60000) as client:
                 for msg in rx_buffer:
                     can_id_hex = hex(msg.arbitration_id)
                     if can_id_hex == "0x100":
@@ -91,17 +91,26 @@ async def data_to_Kuksa():
                         await client.set_current_values({
                             "Vehicle.Body.Lights.IsHighBeamOn": Datapoint(value=value)})
                         await asyncio.sleep(0.1)
-                    elif can_id_hex == "0x101":
-                        # Power value (2 bytes, little-endian)
-                        if len(msg.data) >= 2:
-                            power_value = (msg.data[1] << 8) | msg.data[0]
-                            print(f"CAN ID 0x101 -> Vehicle.Body.Lighting.Power = {power_value}")
+
+                        power_value = (msg.data[2] << 8) | msg.data[1]
+                        print(f"CAN ID 0x100 -> Vehicle.Body.Lighting.Power = {power_value}")
                             
-                            # Send to Kuksa
-                            await client.set_current_values({
-                                "Vehicle.Body.Lighting.Power": Datapoint(value=power_value)
-                            })
-                            await asyncio.sleep(0.1)
+                        # Send to Kuksa
+                        await client.set_current_values({
+                            "Vehicle.Body.Lighting.Power": Datapoint(value=power_value)
+                        })
+                        await asyncio.sleep(0.1)
+                    # elif can_id_hex == "0x101":
+                    #     # Power value (2 bytes, little-endian)
+                    #     if len(msg.data) >= 2:
+                    #         power_value = (msg.data[1] << 8) | msg.data[0]
+                    #         print(f"CAN ID 0x101 -> Vehicle.Body.Lighting.Power = {power_value}")
+                            
+                    #         # Send to Kuksa
+                    #         await client.set_current_values({
+                    #             "Vehicle.Body.Lighting.Power": Datapoint(value=power_value)
+                    #         })
+                    #         await asyncio.sleep(0.1)
                 rx_buffer.clear()
         except Exception as e:
             print(f"Lỗi kết nối: {e}")

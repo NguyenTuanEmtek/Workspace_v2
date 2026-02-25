@@ -89,23 +89,25 @@ def fmu_to_can_messages(headlamp: bool, power: float):
         # Headlamp message (CAN ID 0x100)
         headlamp_data = bytearray(8)
         headlamp_data[0] = 1 if headlamp else 0
+        headlamp_data[1] = int(power) & 0xFF
+        headlamp_data[2] = (int(power) >> 8) & 0xFF
         msg_headlamp = can.Message(
             arbitration_id=0x100,
             data=headlamp_data,
             is_extended_id=False
         )
         messages.append(msg_headlamp)
-        # Power message (CAN ID 0x101)
-        power_data = bytearray(8)
-        power_int = int(power * 1)  # scale if needed
-        power_data[0] = power_int & 0xFF
-        power_data[1] = (power_int >> 8) & 0xFF
-        msg_power = can.Message(
-            arbitration_id=0x101,
-            data=power_data,
-            is_extended_id=False
-        )
-        messages.append(msg_power)
+        # # Power message (CAN ID 0x101)
+        # power_data = bytearray(8)
+        # power_int = int(power * 1)  # scale if needed
+        # power_data[0] = power_int & 0xFF
+        # power_data[1] = (power_int >> 8) & 0xFF
+        # msg_power = can.Message(
+        #     arbitration_id=0x101,
+        #     data=power_data,
+        #     is_extended_id=False
+        # )
+        # messages.append(msg_power)
 
         return messages
 
@@ -180,7 +182,7 @@ def run_simulation(bus, T_END=10.0, dt=0.05, print_progress=True):
                 
                 # Send CAN messages
                 send_can_messages(bus, can_msgs)
-                
+                time.sleep(0.1)
                 # Try to receive CAN messages (non-blocking)
                 # try:
                 #     received_msg = self.bus.recv(timeout=0.001)
