@@ -121,7 +121,7 @@ def send_can_messages(bus, messages):
             except can.CanError as e:
                 print("CAN send failed:", e)
 
-def co_sim_step(t, auto_fmu, lamp_fmu, dt=0.05):
+def co_sim_step(t, auto_fmu, lamp_fmu, dt):
         """
         Execute one co-simulation step
         
@@ -158,7 +158,7 @@ def co_sim_step(t, auto_fmu, lamp_fmu, dt=0.05):
         
         return ambient, headlamp, power, can_msgs
     
-def run_simulation(bus, T_END=10.0, dt=0.05, print_progress=True):
+def run_simulation(bus, T_END, dt, print_progress=True):
         """
         Run co-simulation and CAN transmission
         
@@ -207,7 +207,7 @@ def run_simulation(bus, T_END=10.0, dt=0.05, print_progress=True):
 async def main():
     
     vCan0 = init_can_bus(False)
-    run_simulation(vCan0,T_END=10.0, dt=0.05)
+    run_simulation(vCan0,T_END=6, dt=1)
 
 # Run the async main function
 asyncio.run(main())
